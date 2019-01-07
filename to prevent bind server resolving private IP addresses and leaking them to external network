@@ -1,0 +1,51 @@
+
+
+
+Issue
+In /var/log/messages will be logged messages as below
+
+named[6181]: 11-Feb-2011 09:49:56.024 security: warning: client 127.0.0.1#47583: RFC 1918 response from Internet for xx.xx.xx.xx.in-addr.arpa
+
+
+Resolution
+Solution 1
+It is necessary to create empty zones for every set of private IP addresses used
+
+An example is shown below:
+
+zone "10.IN-ADDR.ARPA" {  
+type master;  
+file "empty";  
+};
+
+zone "16.172.IN-ADDR.ARPA" {  
+type master;  
+file "empty";  
+};
+
+(..snip..)
+
+zone "31.172.IN-ADDR.ARPA" {  
+type master;  
+file "empty";  
+};
+
+zone "168.192.IN-ADDR.ARPA" {  
+type master;  
+file "empty";  
+};
+
+empty:  
+@ 10800 IN SOA . . (  
+          1 3600 1200 604800 10800 )  
+          @ 10800 IN NS .
+          
+          
+        
+        
+        
+        
+Specifically on environments where IPA is setup and it doesn't provide flexibility to add zones manually as above
+Bind can automatically create these empty zones by enabling empty-zones-enable yes; in named.conf.
+Here is the upstream document
+This option works with IPA and normal bind setup
